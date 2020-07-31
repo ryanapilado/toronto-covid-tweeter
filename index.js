@@ -9,7 +9,6 @@ exports.tweetReport = (req, res) => {
 
   axios.get(reportURL)
     .then(function (response) {
-      console.log(response.data);
 
       const twitter = new twit({
         consumer_key: process.env.CONSUMER_KEY,
@@ -19,7 +18,6 @@ exports.tweetReport = (req, res) => {
       });
 
       let message = `${response.data.torontoNewCases} new cases of COVID-19 in Toronto yesterday, and ${response.data.ontarioNewCases} in Ontario.  #toronto #covid19 #coronavirus`;
-      console.log(message);
       twitter.post('statuses/update', { status: message }, function(err, data, response) {
 
       if (err) {
