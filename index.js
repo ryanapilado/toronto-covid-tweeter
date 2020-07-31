@@ -1,0 +1,38 @@
+const twit = require('twit');
+const axios = require('axios');
+const moment = require('moment');
+
+exports.tweetReport = (req, res) => {
+
+  const date = moment().format("YYYY-MM-DD");
+  const reportURL = process.env.READ_REPORT_ENDPOINT + '?date=' + date;
+
+  axios.get(reportURL)
+    .then(function (response) {
+      console.log(response.data);
+
+      const twitter = new twit({
+        consumer_key: process.env.CONSUMER_KEY,
+        consumer_secret: process.env.CONSUMER_SECRET,
+        access_token: process.env.ACCESS_TOKEN,
+        access_token_secret: process.env.ACCESS_TOKEN_SECRET
+      });
+
+      let message = `${response.data.torontoNewCases} new cases of COVID-19 in Toronto yesterday, and ${response.data.ontarioNewCases} in Ontario.  #toronto #covid19 #coronavirus`;
+      console.log(message);
+      twitter.post('statuses/update', { status: message }, function(err, data, response) {
+
+      if (err) {
+        res.status(500).send(error);
+      }
+
+      res.status(200).send();
+
+      });
+    })
+
+    .catch(function (error) {
+      console.error(error);
+      res.status(500).send(error);
+    });
+}

@@ -1,0 +1,17 @@
+{
+  "name": "torcovtweeter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "functions-framework --target=tweetReport --port=3001"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@google-cloud/functions-framework": "^1.6.0",
+    "twit": "^2.2.11",
+    "axios": "^0.19.2",
+    "moment": "^2.27.0"
+  }
+}
