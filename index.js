@@ -1,10 +1,16 @@
 const twit = require('twit');
 const axios = require('axios');
-const moment = require('moment');
+const moment = require('moment-timezone');
 
 exports.tweetReport = (req, res) => {
 
-  const date = moment().format("YYYY-MM-DD");
+  let date;
+  if (req.query.hasOwnProperty('date')) {
+    date = req.query.date;
+  } else {
+    date = moment().tz("America/Toronto").format("YYYY-MM-DD");
+  }
+
   const reportURL = process.env.READ_REPORT_ENDPOINT + '?date=' + date;
 
   axios.get(reportURL)

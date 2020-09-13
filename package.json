@@ -10,8 +10,9 @@
   "license": "ISC",
   "dependencies": {
     "@google-cloud/functions-framework": "^1.6.0",
-    "twit": "^2.2.11",
     "axios": "^0.19.2",
-    "moment": "^2.27.0"
+    "moment": "^2.27.0",
+    "moment-timezone": "^0.5.31",
+    "twit": "^2.2.11"
   }
 }
