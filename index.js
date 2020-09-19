@@ -24,13 +24,13 @@ exports.tweetReport = (req, res) => {
       });
 
       let message = `${response.data.torontoNewCases} new cases of COVID-19 in Toronto yesterday, and ${response.data.ontarioNewCases} in Ontario.  #toronto #covid19 #coronavirus`;
-      twitter.post('statuses/update', { status: message }, function(err, data, response) {
+      twitter.post('statuses/update', { status: message }, function(error, data, response) {
 
-      if (err) {
-        res.status(500).send(error);
-      }
+        if (error) {
+          res.status(500).send(error);
+        }
 
-      res.status(200).send();
+        res.status(200).send();
 
       });
     })
