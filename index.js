@@ -1,6 +1,8 @@
 const twit = require('twit');
 const axios = require('axios');
-const moment = require('moment-timezone');
+const dayjs = require('dayjs');
+const utc = require('dayjs/plugin/utc');
+const timezone = require('dayjs/plugin/timezone');
 
 exports.tweetReport = (req, res) => {
 
@@ -8,7 +10,7 @@ exports.tweetReport = (req, res) => {
   if (req.query.hasOwnProperty('date')) {
     date = req.query.date;
   } else {
-    date = moment().tz("America/Toronto").format("YYYY-MM-DD");
+    date = dayjs().tz("America/Toronto").format("YYYY-MM-DD");
   }
 
   const reportURL = process.env.READ_REPORT_ENDPOINT + '?date=' + date;

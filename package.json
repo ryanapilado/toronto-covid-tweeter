@@ -11,8 +11,7 @@
   "dependencies": {
     "@google-cloud/functions-framework": "^1.6.0",
     "axios": "^0.19.2",
-    "moment": "^2.27.0",
-    "moment-timezone": "^0.5.31",
+    "dayjs": "^1.9.4",
     "twit": "^2.2.11"
   }
 }
