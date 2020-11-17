@@ -56,5 +56,5 @@ exports.tweetReport = async (req, res) => {
 function get7DayAvg(responses, key) {
   const sum = responses.map(response => response.data[key])
     .reduce((a, b) => a + b, 0);
-  return (sum / responses.length).toFixed(2);
+  return Math.round(sum / responses.length);
 }
