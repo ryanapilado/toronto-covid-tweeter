@@ -43,13 +43,16 @@ exports.tweetReport = async (req, res) => {
 }
 
 function getResults(date) {
-  return Promise.all(
+  return Promise.allSettled(
     Array.from(Array(7).keys()).map(i => {
         const dateString = date.subtract(i, 'day').format("YYYY-MM-DD");
         const reportURL = process.env.READ_REPORT_ENDPOINT + '?date=' + dateString;
         return axios.get(reportURL);
     })
-  ).then(responses => {
+  ).then(results => {
+    const responses = results
+                        .filter(result => result.status === "fulfilled")
+                        .map(result => result.value);
     return {
       torontoNewCases : responses[0].data.torontoNewCases,
       ontarioNewCases : responses[0].data.ontarioNewCases,
@@ -65,7 +68,4 @@ function get7DayAvg(responses, key) {
   return Math.round(sum / responses.length);
 }
 
-module.exports = {
-    getResults: getResults,
-    get7DayAvg: get7DayAvg
-}
+exports.getResults = getResults;
