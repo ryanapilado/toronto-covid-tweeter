@@ -15,18 +15,7 @@ exports.tweetReport = async (req, res) => {
     date = dayjs().tz("America/Toronto");
   }
 
-  const responses = await Promise.all(
-    Array.from(Array(7).keys()).map(i => {
-        const dateString = date.subtract(i, 'day').format("YYYY-MM-DD");
-        const reportURL = process.env.READ_REPORT_ENDPOINT + '?date=' + dateString;
-        return axios.get(reportURL)
-    })
-  )
-
-  const torontoNewCases = responses[0].data.torontoNewCases;
-  const ontarioNewCases = responses[0].data.ontarioNewCases;
-  const toronto7DayAvg = get7DayAvg(responses, 'torontoNewCases');
-  const ontario7DayAvg = get7DayAvg(responses, 'ontarioNewCases');
+  const results = await getResults(date);
 
   const twitter = new twit({
     consumer_key: process.env.CONSUMER_KEY,
@@ -36,9 +25,9 @@ exports.tweetReport = async (req, res) => {
   });
 
   let message = 
-    `${torontoNewCases} new cases of COVID-19 in Toronto yesterday` +
-    ` and ${ontarioNewCases} in Ontario.` +
-    ` 7-day averages are ${toronto7DayAvg} and ${ontario7DayAvg} respectively.` +
+    `${results.torontoNewCases} new cases of COVID-19 in Toronto yesterday` +
+    ` and ${results.ontarioNewCases} in Ontario.` +
+    ` 7-day averages are ${results.toronto7DayAvg} and ${results.ontario7DayAvg} respectively.` +
     ` #toronto #covid19 #coronavirus`;
 
   twitter.post('statuses/update', { status: message }, function(error, data, response) {
@@ -53,8 +42,30 @@ exports.tweetReport = async (req, res) => {
 
 }
 
+function getResults(date) {
+  return Promise.all(
+    Array.from(Array(7).keys()).map(i => {
+        const dateString = date.subtract(i, 'day').format("YYYY-MM-DD");
+        const reportURL = process.env.READ_REPORT_ENDPOINT + '?date=' + dateString;
+        return axios.get(reportURL);
+    })
+  ).then(responses => {
+    return {
+      torontoNewCases : responses[0].data.torontoNewCases,
+      ontarioNewCases : responses[0].data.ontarioNewCases,
+      toronto7DayAvg : get7DayAvg(responses, 'torontoNewCases'),
+      ontario7DayAvg : get7DayAvg(responses, 'ontarioNewCases')
+    }
+  });
+}
+
 function get7DayAvg(responses, key) {
   const sum = responses.map(response => response.data[key])
     .reduce((a, b) => a + b, 0);
   return Math.round(sum / responses.length);
+}
+
+module.exports = {
+    getResults: getResults,
+    get7DayAvg: get7DayAvg
 }

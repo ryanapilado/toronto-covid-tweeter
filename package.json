@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "functions-framework --target=tweetReport --port=3001"
+    "start": "functions-framework --target=tweetReport --port=3001",
+    "test": "jest --env=node"
   },
   "author": "",
   "license": "ISC",
@@ -13,5 +14,11 @@
     "axios": "^0.19.2",
     "dayjs": "^1.9.4",
     "twit": "^2.2.11"
+  },
+  "devDependencies": {
+    "jest": "^26.6.3"
+  },
+  "jest": {
+    "setupFiles": ["./tests/jest.env.js"]
   }
 }
