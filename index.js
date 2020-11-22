@@ -17,6 +17,18 @@ exports.tweetReport = async (req, res) => {
 
   const results = await getResults(date);
 
+  let message = 
+    `${results.torontoNewCases} new cases of COVID-19 in Toronto yesterday` +
+    ` and ${results.ontarioNewCases} in Ontario.` +
+    ` 7-day averages are ${results.toronto7DayAvg} and ${results.ontario7DayAvg} respectively.` +
+    ` #toronto #covid19 #coronavirus`;
+
+  return postTweet(message)
+           .then(result => res.status(200).send())
+           .catch(err => res.status(400).send(err));
+}
+
+function postTweet(message) {
   const twitter = new twit({
     consumer_key: process.env.CONSUMER_KEY,
     consumer_secret: process.env.CONSUMER_SECRET,
@@ -24,22 +36,7 @@ exports.tweetReport = async (req, res) => {
     access_token_secret: process.env.ACCESS_TOKEN_SECRET
   });
 
-  let message = 
-    `${results.torontoNewCases} new cases of COVID-19 in Toronto yesterday` +
-    ` and ${results.ontarioNewCases} in Ontario.` +
-    ` 7-day averages are ${results.toronto7DayAvg} and ${results.ontario7DayAvg} respectively.` +
-    ` #toronto #covid19 #coronavirus`;
-
-  twitter.post('statuses/update', { status: message }, function(error, data, response) {
-
-    if (error) {
-      res.status(500).send(error);
-    }
-
-    res.status(200).send();
-
-  });
-
+  return twitter.post('statuses/update', { status: message });
 }
 
 function getResults(date) {
@@ -69,3 +66,4 @@ function get7DayAvg(responses, key) {
 }
 
 exports.getResults = getResults;
+exports.postTweet = postTweet;
