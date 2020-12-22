@@ -47,6 +47,7 @@ function getResults(date) {
         return axios.get(reportURL);
     })
   ).then(results => {
+    if (results[0].status === "rejected") Promise.reject("Today's data not available yet.");
     const responses = results
                         .filter(result => result.status === "fulfilled")
                         .map(result => result.value);
