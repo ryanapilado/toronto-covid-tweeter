@@ -15,17 +15,21 @@ exports.tweetReport = async (req, res) => {
     date = dayjs().tz("America/Toronto");
   }
 
-  const results = await getResults(date).catch(err => res.status(400).send(err));
 
-  let message = 
-    `${results.torontoNewCases} new cases of COVID-19 in Toronto yesterday` +
-    ` and ${results.ontarioNewCases} in Ontario.` +
-    ` 7-day averages are ${results.toronto7DayAvg} and ${results.ontario7DayAvg} respectively.` +
-    ` #toronto #covid19 #coronavirus`;
+  return getResults(date)
+    .then(results => {
 
-  return postTweet(message)
-           .then(result => res.status(200).send())
-           .catch(err => res.status(400).send(err));
+      let message = 
+        `${results.torontoNewCases} new cases of COVID-19 in Toronto yesterday` +
+        ` and ${results.ontarioNewCases} in Ontario.` +
+        ` 7-day averages are ${results.toronto7DayAvg} and ${results.ontario7DayAvg} respectively.` +
+        ` #toronto #covid19 #coronavirus`;
+
+      return postTweet(message);
+    })
+    .then(result => res.status(200).send())
+    .catch(err => res.status(400).send(err));
+
 }
 
 function postTweet(message) {
@@ -47,7 +51,7 @@ function getResults(date) {
         return axios.get(reportURL);
     })
   ).then(results => {
-    if (results[0].status === "rejected") reject("Today's data not available yet.");
+    if (results[0].status === "rejected") return Promise.reject("Today's data not available yet.");
     const responses = results
                         .filter(result => result.status === "fulfilled")
                         .map(result => result.value);
