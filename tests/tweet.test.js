@@ -18,6 +18,7 @@ test("fail if new data not yet available", async () => {
   const { res } = getMockRes();
   await tweetReport(req, res);
   expect(res.status).toHaveBeenCalledWith(400);
+  expect(res.send).toHaveBeenCalledWith("Today's data not available yet.");
 })
 
 test("end-to-end with date param", async () => {
