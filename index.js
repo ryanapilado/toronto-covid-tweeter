@@ -16,7 +16,7 @@ exports.tweetReport = async (req, res) => {
   }
 
 
-  return getResults(date)
+  return getResults(date, validateResults)
     .then(results => {
 
       let message = 
@@ -43,7 +43,7 @@ function postTweet(message) {
   return twitter.post('statuses/update', { status: message });
 }
 
-function getResults(date) {
+function getResults(date, validator) {
   return Promise.allSettled(
     Array.from(Array(7).keys()).map(i => {
         const dateString = date.subtract(i, 'day').format("YYYY-MM-DD");
@@ -55,12 +55,17 @@ function getResults(date) {
     const responses = results
                         .filter(result => result.status === "fulfilled")
                         .map(result => result.value);
-    return {
+    const result = {
       torontoNewCases : responses[0].data.torontoNewCases,
       ontarioNewCases : responses[0].data.ontarioNewCases,
       toronto7DayAvg : get7DayAvg(responses, 'torontoNewCases'),
       ontario7DayAvg : get7DayAvg(responses, 'ontarioNewCases')
     }
+
+    if (!validator(result))
+          return Promise.reject("Suspicious case counts, likely scraping error.");
+    
+    return result;
   });
 }
 
@@ -70,5 +75,13 @@ function get7DayAvg(responses, key) {
   return Math.round(sum / responses.length);
 }
 
+function validateResults(results) {
+  return results.torontoNewCases < results.toronto7DayAvg * 2
+    && results.torontoNewCases > results.toronto7DayAvg / 2
+    && results.ontarioNewCases < results.ontario7DayAvg * 2
+    && results.ontarioNewCases > results.ontario7DayAvg / 2;
+}
+
 exports.getResults = getResults;
 exports.postTweet = postTweet;
+exports.validateResults = validateResults;
