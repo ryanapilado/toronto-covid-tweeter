@@ -22,7 +22,11 @@ test("fail if new data not yet available", async () => {
 })
 
 test("end-to-end with date param", async () => {
-  const req = getMockReq({ query: {date: "2020-08-09"} });
+  let secondsSinceStart = dayjs().unix() - dayjs('2020-06-14').unix();
+  let secondsOffset = Math.floor(Math.random() * secondsSinceStart);
+  let date = dayjs().subtract(secondsOffset, 'second');
+  console.log(date.format('YYYY-MM-DD'));
+  const req = getMockReq({ query: {date: date} });
   const { res } = getMockRes();
   await tweetReport(req, res);
   expect(res.status).toHaveBeenCalledWith(200);
