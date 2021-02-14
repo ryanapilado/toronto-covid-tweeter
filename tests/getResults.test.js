@@ -44,7 +44,7 @@ test("validateResults low", () => {
   let results = {
     torontoNewCases: 180,
     toronto7DayAvg: 100,
-    ontarioNewCases: 48,
+    ontarioNewCases: 24,
     ontario7DayAvg: 100
   }
   expect(validateResults(results)).toBeFalsy();

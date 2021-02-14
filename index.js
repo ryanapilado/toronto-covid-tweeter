@@ -77,9 +77,9 @@ function get7DayAvg(responses, key) {
 
 function validateResults(results) {
   return results.torontoNewCases < results.toronto7DayAvg * 2
-    && results.torontoNewCases > results.toronto7DayAvg / 2
+    && results.torontoNewCases > results.toronto7DayAvg / 4
     && results.ontarioNewCases < results.ontario7DayAvg * 2
-    && results.ontarioNewCases > results.ontario7DayAvg / 2;
+    && results.ontarioNewCases > results.ontario7DayAvg / 4;
 }
 
 exports.getResults = getResults;
